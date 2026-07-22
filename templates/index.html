@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Medical Concept Annotation Toolkit</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ========================= -->
+    <!-- HEADER -->
+    <!-- ========================= -->
+
+    <div class="header">
+
+        <h1>🩺 Medical Concept Annotation Toolkit</h1>
+
+        <p>AI Powered Clinical Entity Recognition using MedCAT</p>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- HIGHLIGHT OPTIONS -->
+    <!-- ========================= -->
+
+    <div class="highlight-options">
+
+        <h3>Highlight Options</h3>
+
+        <label>
+
+            <input
+                type="checkbox"
+                id="allFilter"
+                checked>
+
+            All
+
+        </label>
+
+        <label>
+
+            <input
+                type="checkbox"
+                id="diseaseFilter"
+                checked>
+
+            Disease
+
+        </label>
+
+        <label>
+
+            <input
+                type="checkbox"
+                id="drugFilter"
+                checked>
+
+            Drug
+
+        </label>
+
+        <label>
+
+            <input
+                type="checkbox"
+                id="symptomFilter"
+                checked>
+
+            Symptom
+
+        </label>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- LEGEND -->
+    <!-- ========================= -->
+
+    <div class="legend">
+
+        <strong>Legend :</strong>
+
+        <span class="legend-item">
+
+            <span class="legend-color disease"></span>
+
+            Disease
+
+        </span>
+
+        <span class="legend-item">
+
+            <span class="legend-color drug"></span>
+
+            Drug
+
+        </span>
+
+        <span class="legend-item">
+
+            <span class="legend-color symptom"></span>
+
+            Symptom
+
+        </span>
+
+    </div>
+
+    <br>
+
+
+    <!-- ========================= -->
+    <!-- CLINICAL TEXT -->
+    <!-- ========================= -->
+
+    <h2>📝 Clinical Text</h2>
+
+    <div id="inputText"
+         class="editor"
+         contenteditable="true"
+         spellcheck="false">
+
+    </div>
+
+    <br>
+
+
+    <!-- ========================= -->
+    <!-- BUTTONS -->
+    <!-- ========================= -->
+
+    <div class="button-group">
+
+        <button id="extractBtn">
+
+            🔍 Extract Medical Concepts
+
+        </button>
+
+        <button id="createTagBtn">
+
+            ➕ Create
+
+        </button>
+
+        <button id="exportBtn">
+
+            📥 Export CSV
+
+        </button>
+
+    </div>
+
+    <br>
+
+
+    <!-- ========================= -->
+    <!-- STATISTICS -->
+    <!-- ========================= -->
+
+    <div id="statistics"
+         class="statistics">
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- RESULT TABLE -->
+    <!-- ========================= -->
+
+    <h2>📊 Extracted Medical Concepts</h2>
+
+    <div id="result">
+
+        No entities extracted yet.
+
+    </div>
+
+    <hr>
+
+    <!-- ===================================== -->
+    <!-- PENDING ENTITIES (STAGED, NOT SAVED YET) -->
+    <!-- ===================================== -->
+
+    <h2>🗂️ Selected Entities (Not Saved Yet)</h2>
+
+    <div id="pendingList">
+
+        No entities selected yet.
+
+    </div>
+
+    <button id="saveAllBtn" style="margin-top:15px;">
+
+        💾 Save All Entities
+
+    </button>
+
+    <div id="saveAllStatus"></div>
+
+    <hr>
+    <!-- ===================================== -->
+<!-- SEARCH DATABASE -->
+<!-- ===================================== -->
+
+<h2>🔎 Search Medical Database</h2>
+
+<input
+    type="text"
+    id="searchInput"
+    placeholder="Search disease, drug, symptom..."
+>
+
+<button id="searchBtn">
+
+    Search Database
+
+</button>
+
+<br><br>
+
+<h2>📚 Database Search Results</h2>
+
+<div id="searchResult">
+
+    No search performed.
+
+</div>
+
+<hr>
+
+
+<!-- ===================================== -->
+<!-- HIDDEN MANUAL TAG FORM -->
+<!-- (Required by script.js) -->
+<!-- ===================================== -->
+
+<div style="display:none;">
+
+    <input type="text" id="pmid">
+
+    <input type="text" id="start">
+
+    <input type="text" id="end">
+
+    <input type="text" id="entity">
+
+    <input type="text" id="semanticType">
+
+    <input type="text" id="cui">
+
+</div>
+
+<div id="saveStatus"></div>
+
+
+<!-- ===================================== -->
+<!-- CREATE ENTITY MODAL -->
+<!-- ===================================== -->
+
+<div id="createModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Create New Entity</h2>
+
+        <label>PMID</label>
+
+        <input
+            type="text"
+            id="modalPMID"
+            readonly
+        >
+
+        <label>Entity</label>
+
+        <input
+            type="text"
+            id="modalEntity"
+            readonly
+        >
+
+        <label>Start Position</label>
+
+        <input
+            type="text"
+            id="modalStart"
+            readonly
+        >
+
+        <label>End Position</label>
+
+        <input
+            type="text"
+            id="modalEnd"
+            readonly
+        >
+
+        <hr>
+
+        <button
+            id="searchEntityBtn"
+            style="width:100%;margin-bottom:15px;"
+        >
+
+            🔍 Search in CDB
+
+        </button>
+
+        <div id="searchStatus"></div>
+
+        <br>
+
+        <label>Preferred Name</label>
+
+        <input
+            type="text"
+            id="modalPreferred"
+            readonly
+        >
+
+        <label>Semantic Type</label>
+
+        <input
+            type="text"
+            id="modalSemantic"
+            placeholder="Example : T047"
+        >
+
+        <label>CUI</label>
+
+        <input
+            type="text"
+            id="modalCUI"
+            placeholder="Example : C0011847"
+        >
+
+        <label>Average Confidence</label>
+
+        <input
+            type="text"
+            id="modalConfidence"
+            readonly
+        >
+
+        <label>Synonyms</label>
+
+        <textarea
+            id="modalSynonyms"
+            rows="5"
+            readonly
+        ></textarea>
+
+        <br><br>
+
+        <div class="modal-actions">
+
+            <button id="saveEntityBtn">
+
+                ➕ Add to List
+
+            </button>
+
+            <button id="closeModalBtn">
+
+                ❌ Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- ===================================== -->
+<!-- TOOLTIP -->
+<!-- ===================================== -->
+
+<div id="tooltip"
+     class="tooltip">
+
+</div>
+
+
+<!-- ===================================== -->
+<!-- LOADING MESSAGE -->
+<!-- ===================================== -->
+
+<div id="loader"
+     class="loader"
+     style="display:none;">
+
+    Processing medical concepts...
+
+</div>
+
+
+<!-- ===================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================== -->
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
+</div> <!-- container close -->
+
+
+</body>
+
+</html>
